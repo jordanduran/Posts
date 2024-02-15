@@ -4,6 +4,7 @@ import { TimelinePost, today, thisWeek, thisMonth } from '../posts'
 import { DateTime } from 'luxon'
 import TimelineItem from './TimelineItem.vue';
 import { usePosts } from '../stores/posts'
+
 const postsStore = usePosts();
 
 const periods = ['Today', 'This Week', 'This Month'] as const;
@@ -17,7 +18,13 @@ function handleSelectPeriod(period: Period) {
 }
 
 const posts = computed<TimelinePost[]>(() => {
-  return [today, thisWeek, thisMonth].map(post => {
+  return postsStore.ids.map(id => {
+    const post = postsStore.all.get(id);
+
+    if (!post) {
+      throw new Error(`Post with id of ${id} was not found`)
+    }
+
     return {
       ...post,
       created: DateTime.fromISO(post.created)
@@ -37,8 +44,6 @@ const posts = computed<TimelinePost[]>(() => {
 </script>
 
 <template>
-  {{ postsStore.foo }}
-  <button @click="postsStore.updateFoo('bar')">Update</button>
   <nav class="is-primary panel">
     <span class="panel-tabs">
       <!-- Looping in Vue -->
