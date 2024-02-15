@@ -4,8 +4,8 @@ import { usePosts } from '../stores/posts'
 import { periods } from '../constants'
 
 const postsStore = usePosts();
-
-postsStore.fetchPosts();
+//@ts-ignore
+await postsStore.fetchPosts();
 </script>
 
 <template>
