@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia';
-import { Post, today, thisWeek, thisMonth } from '../posts'
+import { DateTime } from 'luxon';
+import { Post, today, thisWeek, thisMonth, TimelinePost } from '../posts';
+import { Period } from '../constants';
 
 interface PostsState {
-  ids: string[]
-  all: Map<string, Post>
+  ids: string[];
+  all: Map<string, Post>;
+  selectedPeriod: Period;
 }
 
 export const usePosts = defineStore('posts', {
@@ -13,10 +16,42 @@ export const usePosts = defineStore('posts', {
       [today.id, today],
       [thisWeek.id, thisWeek],
       [thisMonth.id, thisMonth],
-    ])
+    ]),
+    selectedPeriod: 'Today',
   }),
 
   actions: {
-    // Update
-  }
-})
+    setSelectedPeriod(period: Period) {
+      this.selectedPeriod = period;
+    },
+  },
+
+  getters: {
+    filteredPosts: (state): TimelinePost[] => {
+      return state.ids
+        .map((id) => {
+          const post = state.all.get(id);
+
+          if (!post) {
+            throw new Error(`Post with id of ${id} was not found`);
+          }
+
+          return {
+            ...post,
+            created: DateTime.fromISO(post.created),
+          };
+        })
+        .filter((post) => {
+          if (state.selectedPeriod === 'Today') {
+            return post.created >= DateTime.now().minus({ day: 1 });
+          }
+
+          if (state.selectedPeriod === 'This Week') {
+            return post.created >= DateTime.now().minus({ week: 1 });
+          }
+
+          return post;
+        });
+    },
+  },
+});
