@@ -1,12 +1,13 @@
 <script setup lang='ts'>
 import { ref } from 'vue'
 
-const periods = ['Today', 'This Week', 'This Month'];
+const periods = ['Today', 'This Week', 'This Month'] as const;
 
-const selectedPeriod = ref('Today');
+type Period = typeof periods[number]
 
-function handleSelectPeriod(period: string) {
-  console.log(period);
+const selectedPeriod = ref<Period>('Today');
+
+function handleSelectPeriod(period: Period) {
   selectedPeriod.value = period;
 }
 </script>
@@ -16,7 +17,8 @@ function handleSelectPeriod(period: string) {
     {{ selectedPeriod }}
     <span class="panel-tabs">
       <!-- Looping in Vue -->
-      <a v-for='period of periods' :key="period" @click="handleSelectPeriod(period)">
+      <a v-for='period of periods' :key="period" @click="handleSelectPeriod(period)"
+        :class="{ 'is-active': period === selectedPeriod }">
         <!-- :key is shorthand for v-bind:key -->
         {{ period }}</a>
     </span>
