@@ -2,6 +2,8 @@
 import { ref, onMounted, watchEffect } from 'vue';
 import { TimelinePost } from '../posts';
 import { marked } from 'marked';
+import highlightjs from 'highlight.js'
+
 const props = defineProps<{
   post: TimelinePost
 }>()
@@ -16,7 +18,13 @@ marked.parse(content.value, (err, parseResult) => {
 })
 
 watchEffect(() => {
-  marked.parse(content.value, (err, parseResult) => {
+  marked.parse(content.value, {
+    gfm: true,
+    breaks: true,
+    highlight: (code) => {
+      return highlightjs.highlightAuto(code).value
+    }
+  }, (err, parseResult) => {
     html.value = parseResult
   })
 })
