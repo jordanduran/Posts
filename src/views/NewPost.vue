@@ -4,7 +4,7 @@ import PostWriter from '../components/PostWriter.vue'
 import { TimelinePost } from '../posts.ts'
 const post: TimelinePost = {
   id: '-1',
-  title: 'Title 1',
+  title: 'Title',
   created: DateTime.now()
 }
 </script>
