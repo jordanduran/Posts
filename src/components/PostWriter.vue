@@ -1,14 +1,25 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import { TimelinePost } from '../posts';
-
+import { marked } from 'marked';
 const props = defineProps<{
   post: TimelinePost
 }>()
 
 const title = ref(props.post.title)
 const content = ref(props.post.markdown)
+const html = ref('')
 const contentEditable = ref<HTMLDivElement>()
+
+marked.parse(content.value, (err, parseResult) => {
+  html.value = parseResult
+})
+
+watchEffect(() => {
+  marked.parse(content.value, (err, parseResult) => {
+    html.value = parseResult
+  })
+})
 
 onMounted(() => {
   if (!contentEditable.value) {
@@ -40,7 +51,7 @@ function handleInput() {
       <div contenteditable ref="contentEditable" @input="handleInput" />
     </div>
     <div class="column">
-      {{ content }}
+      <div v-html="html" />
     </div>
   </div>
 </template>
