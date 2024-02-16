@@ -5,12 +5,13 @@ import { today, thisWeek, thisMonth, Post } from '../posts';
 
 const app = express();
 app.use(cors());
-app.use(bodyParser);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const allPosts = [today, thisWeek, thisMonth];
 
 app.get('/posts', (req, res) => {
-  res.json([today, thisWeek, thisMonth]);
+  res.json(allPosts);
 });
 
 app.post<{}, {}, Post>('/posts', (req, res) => {
